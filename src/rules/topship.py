@@ -10,6 +10,7 @@ class TopShip(Skeleton):
 
     def __init__(self):
         self.file_name = "top_ship.txt"
+        self.json_file_name = "top_ship.json"
         self.ships_destroyed = {}
         self.isk_destroyed = {}
 

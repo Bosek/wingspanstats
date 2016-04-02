@@ -9,6 +9,7 @@ class TopAgent(Skeleton):
 
     def __init__(self):
         self.file_name = "top_agent.txt"
+        self.json_file_name = "top_agent.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

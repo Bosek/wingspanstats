@@ -9,6 +9,7 @@ class TeamPlayer(Skeleton):
 
     def __init__(self):
         self.file_name = "team_player.txt"
+        self.json_file_name = "team_player.json"
         self.agent_fleet_ships_destroyed = {}
         self.agent_fleet_isk_destroyed = {}
 

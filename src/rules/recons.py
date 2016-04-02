@@ -9,6 +9,7 @@ class Recons(Skeleton):
 
     def __init__(self):
         self.file_name = "recons.txt"
+        self.json_file_name = "recons.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

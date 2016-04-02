@@ -9,6 +9,7 @@ class InterdictorAce(Skeleton):
 
     def __init__(self):
         self.file_name = "interdictor_ace.txt"
+        self.json_file_name = "interdictor_ace.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

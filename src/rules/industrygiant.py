@@ -9,6 +9,7 @@ class IndustryGiant(Skeleton):
 
     def __init__(self):
         self.file_name = "industry_giant.txt"
+        self.json_file_name = "industry_giant.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

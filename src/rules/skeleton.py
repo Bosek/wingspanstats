@@ -2,12 +2,19 @@
 # Author: Valtyr Farshield
 
 import os
+import json
 
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
 
 class Skeleton():
 
     def __init__(self):
         self.file_name = "skeleton.txt"
+        self.json_file_name = "skeleton.json"
 
     def __str__(self):
         output = ""
@@ -24,6 +31,12 @@ class Skeleton():
             os.makedirs(directory)
 
         file_full_path = os.path.join(directory, self.file_name)
+        json_file_full_path = os.path.join(directory, self.json_file_name)
         with open(file_full_path, 'w') as f_out:
             f_out.write(str(self))
+        with open(json_file_full_path, 'w') as f_out:
+            dictionary = self.__dict__
+            del dictionary['file_name']
+            del dictionary['json_file_name']
+            f_out.write(json.dumps(self.__dict__, cls=SetEncoder, indent=4, separators=(',', ': ')))
         self.additional_processing(directory)

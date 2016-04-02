@@ -9,6 +9,7 @@ class ExplorerHunter(Skeleton):
 
     def __init__(self):
         self.file_name = "explorer_hunter.txt"
+        self.json_file_name = "explorer_hunter.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

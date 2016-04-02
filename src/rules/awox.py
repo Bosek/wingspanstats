@@ -9,6 +9,7 @@ class Awox(Skeleton):
 
     def __init__(self):
         self.file_name = "top_awox.txt"
+        self.json_file_name = "top_awox.json"
         self.awox_kills = {}
 
     def __str__(self):

@@ -14,6 +14,7 @@ class GeneralStats(Skeleton):
 
     def __init__(self):
         self.file_name = "general_stats.txt"
+        self.json_file_name = "general_stats.json"
         self.pilot_set = set()
         self.total_kills = 0
         self.total_value = 0

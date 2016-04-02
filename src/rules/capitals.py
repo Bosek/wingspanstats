@@ -9,6 +9,7 @@ class Capitals(Skeleton):
 
     def __init__(self):
         self.file_name = "capital_kills.txt"
+        self.json_file_name = "capital_kills.json"
         self.most_valueable = {}
 
     def __str__(self):

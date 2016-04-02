@@ -9,6 +9,7 @@ class T3Cruiser(Skeleton):
 
     def __init__(self):
         self.file_name = "t3cruiser.txt"
+        self.json_file_name = "t3cruiser.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

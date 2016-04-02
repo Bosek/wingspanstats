@@ -9,6 +9,7 @@ class SoloHunter(Skeleton):
 
     def __init__(self):
         self.file_name = "solo_hunter.txt"
+        self.json_file_name = "solo_hunter.json"
         self.agent_solo_ships_destroyed = {}
         self.agent_solo_isk_destroyed = {}
 

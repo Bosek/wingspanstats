@@ -9,6 +9,7 @@ class MostValueable(Skeleton):
 
     def __init__(self):
         self.file_name = "most_valueable.txt"
+        self.json_file_name = "most_valuable.json"
         self.most_valueable = {}
 
     def __str__(self):
@@ -40,6 +41,7 @@ class MostValueableSolo(Skeleton):
 
     def __init__(self):
         self.file_name = "most_valueable_solo.txt"
+        self.json_file_name = "most_valuable_solo.json"
         self.most_valueable_solo = {}
 
     def __str__(self):

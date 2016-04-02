@@ -9,6 +9,7 @@ class Astero(Skeleton):
 
     def __init__(self):
         self.file_name = "astero.txt"
+        self.json_file_name = "astero.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

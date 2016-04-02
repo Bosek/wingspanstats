@@ -9,6 +9,7 @@ class Stratios(Skeleton):
 
     def __init__(self):
         self.file_name = "stratios.txt"
+        self.json_file_name = "stratios.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

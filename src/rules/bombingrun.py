@@ -9,6 +9,7 @@ class BombingRun(Skeleton):
 
     def __init__(self):
         self.file_name = "bombing_run_specialist.txt"
+        self.json_file_name = "bombing_run_specialist.json"
         self.agent_ships_destroyed = {}
         self.agent_isk_destroyed = {}
 

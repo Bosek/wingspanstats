@@ -9,6 +9,7 @@ class PodExpress(Skeleton):
 
     def __init__(self):
         self.file_name = "pod_express.txt"
+        self.json_file_name = "pod_express.json"
         self.most_valueable = {}
 
     def __str__(self):
