@@ -1,5 +1,6 @@
 # wingspanstats.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 import os
 import json
@@ -8,7 +9,7 @@ from rules.statsconfig import StatsConfig
 from rules.generalstats import GeneralStats
 from rules.topagent import TopAgent
 from rules.topship import TopShip
-from rules.mostvalueable import MostValueable, MostValueableSolo
+from rules.mostvaluable import MostValuable, MostValuableSolo
 from rules.solohunter import SoloHunter
 from rules.teamplayer import TeamPlayer
 from rules.awox import Awox
@@ -16,7 +17,6 @@ from rules.blops import Blops
 from rules.bombers import Bombers
 from rules.astero import Astero
 from rules.stratios import Stratios
-from rules.nestor import Nestor
 from rules.recons import Recons
 from rules.t3cruiser import T3Cruiser
 from rules.capitals import Capitals
@@ -34,15 +34,14 @@ def defined_rules():
         GeneralStats(),
         TopAgent(),
         TopShip(),
-        MostValueable(),
-        MostValueableSolo(),
+        MostValuable(),
+        MostValuableSolo(),
         SoloHunter(),
         TeamPlayer(),
         Blops(),
         Bombers(),
         Astero(),
         Stratios(),
-        Nestor(),
         Recons(),
         T3Cruiser(),
         Capitals(),
@@ -110,27 +109,28 @@ def analyze_data(db_list):
 
 def main():
     analyze_data([
-        (2014, 7),
-        (2014, 8),
-        (2014, 9),
-        (2014, 10),
-        (2014, 11),
-        (2014, 12),
-        (2015, 1),
-        (2015, 2),
-        (2015, 3),
-        (2015, 4),
-        (2015, 5),
-        (2015, 6),
-        (2015, 7),
-        (2015, 8),
-        (2015, 9),
-        (2015, 10),
-        (2015, 11),
-        (2015, 12),
-        (2016, 1),
-        (2016, 2),
+        #(2014, 7),
+        #(2014, 8),
+        #(2014, 9),
+        #(2014, 10),
+        #(2014, 11),
+        #(2014, 12),
+        #(2015, 1),
+        #(2015, 2),
+        #(2015, 3),
+        #(2015, 4),
+        #(2015, 5),
+        #(2015, 6),
+        #(2015, 7),
+        #(2015, 8),
+        #(2015, 9),
+        #(2015, 10),
+        #(2015, 11),
+        #(2015, 12),
+        #(2016, 1),
+        #(2016, 2),
         (2016, 3),
+        (2016, 4),
     ])
 
 if __name__ == "__main__":

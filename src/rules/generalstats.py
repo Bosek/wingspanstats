@@ -1,5 +1,6 @@
 # generalstats.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 import os
 from skeleton import Skeleton
@@ -13,7 +14,6 @@ from calendar import monthrange
 class GeneralStats(Skeleton):
 
     def __init__(self):
-        self.file_name = "general_stats.txt"
         self.json_file_name = "general_stats.json"
         self.pilot_set = set()
         self.total_kills = 0
@@ -30,7 +30,7 @@ class GeneralStats(Skeleton):
         self.total_kills_wh = 0
         self.total_value_wh = 0
 
-        self.wh_stats = {}
+        self.wh_stats = list()
         self.corp_names = set([])
         self.date_start = None
         self.date_end = None
@@ -39,91 +39,10 @@ class GeneralStats(Skeleton):
             reader = csv.reader(infile)
             self.security = {int(rows[0]): rows[1] for rows in reader}
 
-    def __str__(self):
-        output = ""
-        output += "General statistics\n"
-        output += "--------------------------------------------\n"
-        output += "Total kills: {}\n".format(self.total_kills)
-        output += "Total value: {:.2f}b\n".format(float(self.total_value) / 1000000000.0)
-        if self.total_kills > 0:
-            output += "Average value/kill: {:.2f}m\n".format(
-                float(self.total_value) / 1000000 / self.total_kills
-            )
-
-        # activity
-        avg_members = self.compute_avg_members()
-        if avg_members > 0:
-            activity_output = "-- Total number of active pilots: {}/{} ({:.2f}%)".format(
-                len(self.pilot_set), avg_members, len(self.pilot_set) / float(avg_members) * 100
-            )
-            print activity_output
-            output += "{}\n".format(activity_output)
-            output += "Kills per active member: {:.2f}\n".format(float(self.total_kills) / len(self.pilot_set))
-            output += "ISK destroyed per active member: {:.2f}m\n".format(
-                float(self.total_value) / len(self.pilot_set) / 1000000.0
-            )
-
-        output += "Solo total kills: {}\n".format(self.solo_total_kills)
-        output += "Solo total value: {:.2f}b\n".format(float(self.solo_total_value) / 1000000000.0)
-        output += "\n\n"
-        output += "High-sec total kills: {} ({:.2f}%)\n".format(
-            self.total_kills_hs,
-            self.total_kills_hs / float(self.total_kills) * 100
-        )
-        output += "High-sec total value: {:.2f}b ({:.2f}%)\n".format(
-            float(self.total_value_hs) / 1000000000.0,
-            self.total_value_hs / self.total_value * 100
-        )
-        output += "\n"
-        output += "Low-sec total kills: {} ({:.2f}%)\n".format(
-            self.total_kills_ls,
-            self.total_kills_ls / float(self.total_kills) * 100
-        )
-        output += "Low-sec total value: {:.2f}b ({:.2f}%)\n".format(
-            float(self.total_value_ls) / 1000000000.0,
-            self.total_value_ls / self.total_value * 100
-        )
-        output += "\n"
-        output += "Null-sec total kills: {} ({:.2f}%)\n".format(
-            self.total_kills_ns,
-            self.total_kills_ns / float(self.total_kills) * 100
-        )
-        output += "Null-sec total value: {:.2f}b ({:.2f}%)\n".format(
-            float(self.total_value_ns) / 1000000000.0,
-            self.total_value_ns / self.total_value * 100
-        )
-        output += "\n"
-        output += "W-space total kills: {} ({:.2f}%)\n".format(
-            self.total_kills_wh,
-            self.total_kills_wh / float(self.total_kills) * 100
-        )
-        output += "W-space total value: {:.2f}b ({:.2f}%)\n".format(
-            float(self.total_value_wh) / 1000000000.0,
-            self.total_value_wh / self.total_value * 100
-        )
-
-        if self.wh_stats != {}:
-            for wh_class in ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c13', 'c12']:
-                if wh_class in self.wh_stats.keys():
-                    output += "  [*] {} - total kills: {}, total isk: {:.2f}b\n".format(
-                        wh_class.upper() if wh_class != 'c12' else 'Thera',
-                        self.wh_stats[wh_class][0],
-                        self.wh_stats[wh_class][1] / 1000000000.0,
-                    )
-
-            drifter_total = 0
-            drifter_isk = 0
-            for wh_class in ['c14', 'c15', 'c16', 'c17', 'c18']:
-                if wh_class in self.wh_stats.keys():
-                    drifter_total += self.wh_stats[wh_class][0]
-                    drifter_isk += self.wh_stats[wh_class][1]
-            if drifter_total != 0:
-                output += "  [*] Drifter wormholes - total kills: {}, total isk: {:.2f}b\n".format(
-                    drifter_total,
-                    drifter_isk / 1000000000.0,
-                )
-
-        return output
+    def preprocess_output(self, dictionary):
+        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+        del dictionary["security"]
+        return dictionary
 
     def compute_avg_members(self):
         avg_members = 0
@@ -194,9 +113,15 @@ class GeneralStats(Skeleton):
             if attacker['corporationID'] in StatsConfig.CORP_IDS:
                 self.pilot_set.add(attacker['characterID'])
                 self.corp_names.add(attacker['corporationName'])
+
+                date = killmail['killTime'].split()[0]
                 if not self.date_start:
-                    self.date_start = killmail['killTime'].split()[0]
-                self.date_end = killmail['killTime'].split()[0]
+                    self.date_start = date
+                    self.date_end = date
+                if int(self.date_start.split('-')[2]) > int(date.split('-')[2]):
+                    self.date_start = date
+                if int(self.date_end.split('-')[2]) < int(date.split('-')[2]):
+                    self.date_end = date
 
         [total_non_npc_attackers, wingspan_attackers] = StatsConfig.attacker_types(killmail)
         if total_non_npc_attackers == wingspan_attackers and wingspan_attackers == 1:
@@ -217,9 +142,19 @@ class GeneralStats(Skeleton):
             self.total_kills_wh += 1
             self.total_value_wh += killmail['zkb']['totalValue']
 
+            wh_stats = filter(
+                lambda x: x.get('type') == self.security[system_id],
+                self.wh_stats
+            )
+
             # stats for each wh class
-            if self.security[system_id] in self.wh_stats.keys():
-                self.wh_stats[self.security[system_id]][0] += 1
-                self.wh_stats[self.security[system_id]][1] += killmail['zkb']['totalValue']
+            if len(wh_stats):
+                wh_index = self.wh_stats.index(wh_stats[0])
+                self.wh_stats[wh_index]['destroyed'] += 1
+                self.wh_stats[wh_index]['total_value'] += killmail['zkb']['totalValue']
             else:
-                self.wh_stats[self.security[system_id]] = [1, killmail['zkb']['totalValue']]
+                self.wh_stats.append({
+                    'type': self.security[system_id],
+                    'destroyed': 1,
+                    'total_value': killmail['zkb']['totalValue']
+                })

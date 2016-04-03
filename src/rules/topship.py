@@ -1,5 +1,6 @@
 # topship.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 import csv
 from skeleton import Skeleton
@@ -9,52 +10,22 @@ from statsconfig import StatsConfig
 class TopShip(Skeleton):
 
     def __init__(self):
-        self.file_name = "top_ship.txt"
         self.json_file_name = "top_ship.json"
-        self.ships_destroyed = {}
-        self.isk_destroyed = {}
+        self.ships_destroyed = list()
+        self.isk_destroyed = list()
 
         with open('typeIDs.csv', mode='r') as infile:
             reader = csv.reader(infile)
             self.items = {int(rows[0]):rows[1] for rows in reader}
 
+    def sort(self):
+        self.ships_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
+        self.isk_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
 
-    def __str__(self):
-        output = ""
-
-        output += "Ships destroyed by a specific hull\n"
-        output += "--------------------------------------------\n"
-        place = 0
-        for w in sorted(
-                self.ships_destroyed,
-                key=self.ships_destroyed.get,
-                reverse=True
-        )[:StatsConfig.MAX_PLACES]:
-            place += 1
-            output += "#{:02d} - {} - {} ships\n".format(
-                place,
-                self.items[w],
-                self.ships_destroyed[w]
-            )
-
-        output += "\n"
-
-        output += "ISK destroyed by a specific hull\n"
-        output += "--------------------------------------------\n"
-        place = 0
-        for w in sorted(
-                self.isk_destroyed,
-                key=self.isk_destroyed.get,
-                reverse=True
-        )[:StatsConfig.MAX_PLACES]:
-            place += 1
-            output += "#{:02d} - {} - {:.2f}b\n".format(
-                place,
-                self.items[w],
-                self.isk_destroyed[w] / 1000000000.0
-            )
-
-        return output
+    def preprocess_output(self, dictionary):
+        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+        del dictionary["items"]
+        return dictionary
 
     def process_km(self, killmail):
         isk_destroyed = killmail['zkb']['totalValue']
@@ -66,13 +37,23 @@ class TopShip(Skeleton):
 
             if attacker_ship != 0 and attacker_ship not in [670, 33328]:  # ignore unknown and capsules
                 if attacker_name != "" and attacker_corp in StatsConfig.CORP_IDS:
+                    all_ships_destroyed = filter(
+                        lambda x: x.get('name') == self.items[attacker_ship],
+                        self.ships_destroyed
+                    )
+                    all_isk_destroyed = filter(
+                        lambda x: x.get('name') == self.items[attacker_ship],
+                        self.isk_destroyed
+                    )
 
-                    if attacker_ship in self.ships_destroyed.keys():
-                        self.ships_destroyed[attacker_ship] += 1
+                    if len(all_ships_destroyed):
+                        ship_index = self.ships_destroyed.index(all_ships_destroyed[0])
+                        self.ships_destroyed[ship_index]['destroyed'] += 1
                     else:
-                        self.ships_destroyed[attacker_ship] = 1
+                        self.ships_destroyed.append({'name': self.items[attacker_ship], 'destroyed': 1})
 
-                    if attacker_ship in self.isk_destroyed.keys():
-                        self.isk_destroyed[attacker_ship] += isk_destroyed
+                    if len(all_isk_destroyed):
+                        ship_index = self.isk_destroyed.index(all_isk_destroyed[0])
+                        self.isk_destroyed[ship_index]['destroyed'] += isk_destroyed
                     else:
-                        self.isk_destroyed[attacker_ship] = isk_destroyed
+                        self.isk_destroyed.append({'name': self.items[attacker_ship], 'destroyed': isk_destroyed})

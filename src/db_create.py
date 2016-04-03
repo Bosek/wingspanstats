@@ -1,5 +1,6 @@
 # db_create.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 import os
 import urllib2
@@ -93,6 +94,7 @@ def main():
     extract_data(2016, 1)
     extract_data(2016, 2)
     extract_data(2016, 3)
+    extract_data(2016, 4)
 
 if __name__ == "__main__":
     main()

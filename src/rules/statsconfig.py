@@ -1,5 +1,6 @@
 # statsconfig.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 import os
 import requests
