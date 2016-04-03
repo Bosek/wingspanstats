@@ -10,7 +10,7 @@ class SetEncoder(json.JSONEncoder):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
 
-class Skeleton():
+class Skeleton(object):
 
     def __init__(self):
         self.file_name = "skeleton.txt"
@@ -26,6 +26,11 @@ class Skeleton():
     def additional_processing(self, directory):
         pass
 
+    def preprocess_output(self, dictionary):
+        del dictionary["file_name"]
+        del dictionary["json_file_name"]
+        return dictionary
+
     def output_results(self, directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -35,8 +40,6 @@ class Skeleton():
         with open(file_full_path, 'w') as f_out:
             f_out.write(str(self))
         with open(json_file_full_path, 'w') as f_out:
-            dictionary = self.__dict__
-            del dictionary['file_name']
-            del dictionary['json_file_name']
+            dictionary = self.preprocess_output(self.__dict__)
             f_out.write(json.dumps(self.__dict__, cls=SetEncoder, indent=4, separators=(',', ': ')))
         self.additional_processing(directory)

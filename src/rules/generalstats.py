@@ -184,6 +184,11 @@ class GeneralStats(Skeleton):
         plt.plot()
         plt.savefig(os.path.join(directory, 'piechart_all_isk_destroyed'))
 
+    def preprocess_output(self, dictionary):
+        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+        del dictionary["security"]
+        return dictionary
+
     def process_km(self, killmail):
         self.total_kills += 1
         self.total_value += killmail['zkb']['totalValue']
@@ -194,9 +199,15 @@ class GeneralStats(Skeleton):
             if attacker['corporationID'] in StatsConfig.CORP_IDS:
                 self.pilot_set.add(attacker['characterID'])
                 self.corp_names.add(attacker['corporationName'])
+
+                date = killmail['killTime'].split()[0]
                 if not self.date_start:
-                    self.date_start = killmail['killTime'].split()[0]
-                self.date_end = killmail['killTime'].split()[0]
+                    self.date_start = date
+                    self.date_end = date
+                if int(self.date_start.split('-')[2]) > int(date.split('-')[2]):
+                    self.date_start = date
+                if int(self.date_end.split('-')[2]) < int(date.split('-')[2]):
+                    self.date_end = date
 
         [total_non_npc_attackers, wingspan_attackers] = StatsConfig.attacker_types(killmail)
         if total_non_npc_attackers == wingspan_attackers and wingspan_attackers == 1:

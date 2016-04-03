@@ -56,6 +56,11 @@ class TopShip(Skeleton):
 
         return output
 
+    def preprocess_output(self, dictionary):
+        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+        del dictionary["items"]
+        return dictionary
+
     def process_km(self, killmail):
         isk_destroyed = killmail['zkb']['totalValue']
 
