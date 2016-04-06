@@ -22,8 +22,8 @@ class TopShip(Skeleton):
         self.ships_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
         self.isk_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
 
-    def preprocess_output(self, dictionary):
-        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+    def preprocess_output(self):
+        dictionary = super(self.__class__, self).preprocess_output()
         del dictionary["items"]
         return dictionary
 

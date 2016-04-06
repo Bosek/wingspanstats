@@ -25,7 +25,8 @@ class Skeleton(object):
     def sort(self):
         pass
 
-    def preprocess_output(self, dictionary):
+    def preprocess_output(self):
+        dictionary = self.__dict__.copy()
         del dictionary["json_file_name"]
         return dictionary
 
@@ -37,6 +38,6 @@ class Skeleton(object):
 
         json_file_full_path = os.path.join(directory, self.json_file_name)
         with open(json_file_full_path, 'w') as f_out:
-            dictionary = self.preprocess_output(self.__dict__)
-            f_out.write(json.dumps(self.__dict__, cls=SetEncoder, indent=4, separators=(',', ': ')))
+            dictionary = self.preprocess_output()
+            f_out.write(json.dumps(dictionary, cls=SetEncoder, indent=4, separators=(',', ': ')))
         self.additional_processing(directory)
