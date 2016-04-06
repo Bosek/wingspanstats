@@ -56,8 +56,8 @@ class TopShip(Skeleton):
 
         return output
 
-    def preprocess_output(self, dictionary):
-        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+    def preprocess_output(self):
+        dictionary = super(self.__class__, self).preprocess_output()
         del dictionary["items"]
         return dictionary
 

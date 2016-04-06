@@ -184,8 +184,8 @@ class GeneralStats(Skeleton):
         plt.plot()
         plt.savefig(os.path.join(directory, 'piechart_all_isk_destroyed'))
 
-    def preprocess_output(self, dictionary):
-        dictionary = super(self.__class__, self).preprocess_output(dictionary)
+    def preprocess_output(self):
+        dictionary = super(self.__class__, self).preprocess_output()
         del dictionary["security"]
         return dictionary
 
