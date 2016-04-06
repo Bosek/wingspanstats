@@ -1,5 +1,6 @@
 # stratios.py
 # Author: Valtyr Farshield
+# Author: Tomas Bosek
 
 from skeleton import Skeleton
 from statsconfig import StatsConfig
@@ -8,40 +9,13 @@ from statsconfig import StatsConfig
 class Stratios(Skeleton):
 
     def __init__(self):
-        self.file_name = "stratios.txt"
         self.json_file_name = "stratios.json"
-        self.agent_ships_destroyed = {}
-        self.agent_isk_destroyed = {}
+        self.agent_ships_destroyed = list()
+        self.agent_isk_destroyed = list()
 
-
-    def __str__(self):
-        output = ""
-
-        output += "Top Stratios pilots - ships destroyed\n"
-        output += "--------------------------------------------\n"
-        place = 0
-        for w in sorted(
-                self.agent_ships_destroyed,
-                key=self.agent_ships_destroyed.get,
-                reverse=True
-        )[:StatsConfig.MAX_PLACES]:
-            place += 1
-            output += "#{:02d} - {} - {} ships\n".format(place, w, self.agent_ships_destroyed[w])
-
-        output += "\n"
-
-        output += "Top Stratios pilots - ISK destroyed\n"
-        output += "--------------------------------------------\n"
-        place = 0
-        for w in sorted(
-                self.agent_isk_destroyed,
-                key=self.agent_isk_destroyed.get,
-                reverse=True
-        )[:StatsConfig.MAX_PLACES]:
-            place += 1
-            output += "#{:02d} - {} - {:.2f}b\n".format(place, w, self.agent_isk_destroyed[w] / 1000000000.0)
-
-        return output
+    def sort(self):
+        self.agent_ships_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
+        self.agent_isk_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
 
     def process_km(self, killmail):
         isk_destroyed = killmail['zkb']['totalValue']
@@ -53,12 +27,23 @@ class Stratios(Skeleton):
 
             if attacker_name != "" and attacker_corp in StatsConfig.CORP_IDS:
                 if attacker_ship in [33470]:
-                    if attacker_name in self.agent_ships_destroyed.keys():
-                        self.agent_ships_destroyed[attacker_name] += 1
-                    else:
-                        self.agent_ships_destroyed[attacker_name] = 1
+                    agent_ships_destroyed = filter(
+                        lambda x: x.get('name') == attacker_name,
+                        self.agent_ships_destroyed
+                    )
+                    agent_isk_destroyed = filter(
+                        lambda x: x.get('name') == attacker_name,
+                        self.agent_isk_destroyed
+                    )
 
-                    if attacker_name in self.agent_isk_destroyed.keys():
-                        self.agent_isk_destroyed[attacker_name] += isk_destroyed
+                    if len(agent_ships_destroyed):
+                        agent_index = self.agent_ships_destroyed.index(agent_ships_destroyed[0])
+                        self.agent_ships_destroyed[agent_index]['destroyed'] += 1
                     else:
-                        self.agent_isk_destroyed[attacker_name] = isk_destroyed
+                        self.agent_ships_destroyed.append({'name': attacker_name, 'destroyed': 1})
+
+                    if len(agent_isk_destroyed):
+                        agent_index = self.agent_isk_destroyed.index(agent_isk_destroyed[0])
+                        self.agent_isk_destroyed[agent_index]['destroyed'] += isk_destroyed
+                    else:
+                        self.agent_isk_destroyed.append({'name': attacker_name, 'destroyed': isk_destroyed})
