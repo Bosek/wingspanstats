@@ -7,9 +7,10 @@ import json
 
 from rules.statsconfig import StatsConfig
 from rules.generalstats import GeneralStats
-from rules.topagent import TopAgent
-from rules.topship import TopShip
-from rules.mostvaluable import MostValuable, MostValuableSolo
+from rules.agents import Agents
+from rules.victims import Victims
+from rules.ships import Ships
+from rules.valuables import Valuables
 from rules.solohunter import SoloHunter
 from rules.teamplayer import TeamPlayer
 from rules.awox import Awox
@@ -32,10 +33,10 @@ from rules.theracrusader import TheraCrusader
 def defined_rules():
     return [
         GeneralStats(),
-        TopAgent(),
-        TopShip(),
-        MostValuable(),
-        MostValuableSolo(),
+        Agents(),
+        Ships(),
+        Victims(),
+        Valuables(),
         SoloHunter(),
         TeamPlayer(),
         Blops(),
@@ -109,26 +110,26 @@ def analyze_data(db_list):
 
 def main():
     analyze_data([
-        #(2014, 7),
-        #(2014, 8),
-        #(2014, 9),
-        #(2014, 10),
-        #(2014, 11),
-        #(2014, 12),
-        #(2015, 1),
-        #(2015, 2),
-        #(2015, 3),
-        #(2015, 4),
-        #(2015, 5),
-        #(2015, 6),
-        #(2015, 7),
-        #(2015, 8),
-        #(2015, 9),
-        #(2015, 10),
-        #(2015, 11),
-        #(2015, 12),
-        #(2016, 1),
-        #(2016, 2),
+        (2014, 7),
+        (2014, 8),
+        (2014, 9),
+        (2014, 10),
+        (2014, 11),
+        (2014, 12),
+        (2015, 1),
+        (2015, 2),
+        (2015, 3),
+        (2015, 4),
+        (2015, 5),
+        (2015, 6),
+        (2015, 7),
+        (2015, 8),
+        (2015, 9),
+        (2015, 10),
+        (2015, 11),
+        (2015, 12),
+        (2016, 1),
+        (2016, 2),
         (2016, 3),
         (2016, 4),
     ])

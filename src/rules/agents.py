@@ -1,4 +1,4 @@
-# astero.py
+# agents.py
 # Author: Valtyr Farshield
 # Author: Tomas Bosek
 
@@ -7,10 +7,10 @@ from statsconfig import StatsConfig
 from models.agent import Agent
 
 
-class Astero(Skeleton):
+class Agents(Skeleton):
 
     def __init__(self):
-        self.json_file_name = "astero.json"
+        self.json_file_name = "agents.json"
         self.agents = list()
 
     def sort(self):
@@ -23,10 +23,8 @@ class Astero(Skeleton):
             attacker_id = attacker['characterID']
             attacker_name = attacker['characterName']
             attacker_corp = attacker['corporationID']
-            attacker_ship = attacker['shipTypeID']
 
             if attacker_name != "" and attacker_corp in StatsConfig.CORP_IDS:
-                if attacker_ship in [33468]:
                     agents = filter(
                         lambda x: x.character_name == attacker_name,
                         self.agents

@@ -5,14 +5,15 @@
 import os
 import json
 
+
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
             return list(obj)
-        return json.JSONEncoder.default(self, obj)
+        return obj.__dict__
+
 
 class Skeleton(object):
-
     def __init__(self):
         self.json_file_name = "skeleton.json"
 
@@ -39,5 +40,7 @@ class Skeleton(object):
         json_file_full_path = os.path.join(directory, self.json_file_name)
         with open(json_file_full_path, 'w') as f_out:
             dictionary = self.preprocess_output()
-            f_out.write(json.dumps(dictionary, cls=SetEncoder, indent=4, separators=(',', ': ')))
+            f_out.write(
+                json.dumps(dictionary, cls=SetEncoder, indent=4, separators=(',', ': '))
+            )
         self.additional_processing(directory)

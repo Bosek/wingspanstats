@@ -19,8 +19,6 @@ class StatsConfig:
     FLEET_COMP = 0.25
     INCLUDE_AWOX = False
 
-    MAX_PLACES = 25
-
     @staticmethod
     def attacker_types(killmail):
         total_non_npc_attackers = 0
@@ -54,7 +52,11 @@ class StatsConfig:
 
     @staticmethod
     def member_count(corp_name, start_date, stop_date):
-        url = "http://evemaps.dotlan.net/corp/{}/stats/{}:{}".format(corp_name, start_date, stop_date)
+        url = "http://evemaps.dotlan.net/corp/{}/stats/{}:{}".format(
+            corp_name,
+            start_date,
+            stop_date
+        )
         result = requests.get(url)
 
         data_points = 0
@@ -69,7 +71,8 @@ class StatsConfig:
             encoded_data = encoded_data.encode('ascii', 'ignore')
 
             for code in [encoded_data[i:i+2] for i in range(0, len(encoded_data), 2)]:
-                decoded_nr = StatsConfig.decode_extended(code[0]) * 64 + StatsConfig.decode_extended(code[1])
+                decoded_nr = StatsConfig.decode_extended(code[0]) * 64
+                decoded_nr += StatsConfig.decode_extended(code[1])
                 member_count = decoded_nr / 4095.0 * graph_range
                 avg_member_count += int(round(member_count))
                 data_points += 1
@@ -90,10 +93,3 @@ class StatsConfig:
         avg_member_count = avg_member_count / float(data_points)
         avg_member_count = int(round(avg_member_count))
         return avg_member_count
-
-
-def main():
-    print StatsConfig.member_count("WiNGSPAN Delivery Services".replace(" ", "_"), "2014-07-01", "2014-07-31")
-
-if __name__ == "__main__":
-    main()

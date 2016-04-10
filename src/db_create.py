@@ -13,11 +13,11 @@ from datetime import datetime
 
 def zkill_fetch(year, month, page_nr):
     headers = {
-        "User-Agent": "Wingspan Stats Fork, Mail: bosektom@gmail.com",
+        "User-Agent": "TB's WiNGSPAN Statistics, Mail: bosektom@gmail.com",
         "Accept-encoding": "gzip"
     }
 
-    # The Wingspan LOGO Alliance
+    # WiNGSPAN Delivery Network
     corporation_ids = ",".join([str(corp) for corp in StatsConfig.CORP_IDS])
     url = "https://zkillboard.com/api/kills/corporationID/" \
         "{}/year/{}/month/{}/page/{}/".format(

@@ -4,46 +4,39 @@
 
 from skeleton import Skeleton
 from statsconfig import StatsConfig
+from models.agent import Agent
 
 
 class Bombers(Skeleton):
 
     def __init__(self):
         self.json_file_name = "bombers.json"
-        self.agent_ships_destroyed = list()
-        self.agent_isk_destroyed = list()
+        self.agents = list()
 
     def sort(self):
-        self.agent_ships_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
-        self.agent_isk_destroyed.sort(key=lambda x: x['destroyed'], reverse=True)
+        self.agents.sort(key=lambda x: x.isk_destroyed * x.ships_destroyed, reverse=True)
 
     def process_km(self, killmail):
         isk_destroyed = killmail['zkb']['totalValue']
 
         for attacker in killmail['attackers']:
+            attacker_id = attacker['characterID']
             attacker_name = attacker['characterName']
             attacker_corp = attacker['corporationID']
             attacker_ship = attacker['shipTypeID']
 
             if attacker_name != "" and attacker_corp in StatsConfig.CORP_IDS:
                 if attacker_ship in [11377, 12034, 12032, 12038]:
-                    agent_ships_destroyed = filter(
-                        lambda x: x.get('name') == attacker_name,
-                        self.agent_ships_destroyed
-                    )
-                    agent_isk_destroyed = filter(
-                        lambda x: x.get('name') == attacker_name,
-                        self.agent_isk_destroyed
+                    agents = filter(
+                        lambda x: x.character_name == attacker_name,
+                        self.agents
                     )
 
-                    if len(agent_ships_destroyed):
-                        agent_index = self.agent_ships_destroyed.index(agent_ships_destroyed[0])
-                        self.agent_ships_destroyed[agent_index]['destroyed'] += 1
+                    if len(agents):
+                        agent_index = self.agents.index(agents[0])
+                        self.agents[agent_index].ships_destroyed += 1
+                        self.agents[agent_index].isk_destroyed += isk_destroyed
                     else:
-                        self.agent_ships_destroyed.append({'name': attacker_name, 'destroyed': 1})
-
-                    if len(agent_isk_destroyed):
-                        agent_index = self.agent_isk_destroyed.index(agent_isk_destroyed[0])
-                        self.agent_isk_destroyed[agent_index]['destroyed'] += isk_destroyed
-                    else:
-                        self.agent_isk_destroyed.append({'name': attacker_name, 'destroyed': isk_destroyed})
+                        self.agents.append(
+                            Agent(attacker_id, attacker_name, 1, isk_destroyed)
+                        )
