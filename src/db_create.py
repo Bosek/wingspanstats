@@ -6,6 +6,8 @@ import os
 import urllib2
 import gzip
 import json
+import sys
+import re
 from StringIO import StringIO
 from rules.statsconfig import StatsConfig
 from datetime import datetime
@@ -13,7 +15,7 @@ from datetime import datetime
 
 def zkill_fetch(year, month, page_nr):
     headers = {
-        "User-Agent": "TB's WiNGSPAN Statistics, Mail: bosektom@gmail.com",
+        "User-Agent": "WINGSPAN Statistics, Mail: bosektom@gmail.com",
         "Accept-encoding": "gzip"
     }
 
@@ -82,35 +84,44 @@ def extract_data(year, month):
     return requests
 
 
+def get_daterange(start_range, end_range):
+    regstr = "^([0-9]{4})-(0?[1-9]|1[012])$"
+
+    start = re.search(regstr, start_range) if start_range else None
+    end = re.search(regstr, end_range) if end_range else None
+
+    if start and not end:
+        return [{'year': int(start.group(1)), 'month': int(start.group(2))}]
+    elif start and end:
+        years_delta = int(end.group(1)) - int(start.group(1))
+        daterange = list()
+        for year in range(int(start.group(1)), int(end.group(1))+1):
+            for month in range(1, 13):
+                if year == int(start.group(1)) and month < int(start.group(2)):
+                    continue
+                if year == int(end.group(1)) and month > int(end.group(2)):
+                    break
+                daterange.append({'year': year, 'month': month})
+        return daterange
+    else:
+        return None
+
+
 def main():
-    start = datetime.now()
+    args = sys.argv
+
+    daterange = get_daterange(args[1] if len(args) >= 2 else None, args[2] if len(args) >= 3 else None)
+    if not daterange:
+        print "You have to specify the start date and optionally the end date in format YYYY-MM"
+        return
+
+    start_time = datetime.now()
     requests = 0
-    requests += extract_data(2014, 7)
-    requests += extract_data(2014, 8)
-    requests += extract_data(2014, 9)
-    requests += extract_data(2014, 10)
-    requests += extract_data(2014, 11)
-    requests += extract_data(2014, 12)
+    for date in daterange:
+        requests += extract_data(date['year'], date['month'])
 
-    requests += extract_data(2015, 1)
-    requests += extract_data(2015, 2)
-    requests += extract_data(2015, 3)
-    requests += extract_data(2015, 4)
-    requests += extract_data(2015, 5)
-    requests += extract_data(2015, 6)
-    requests += extract_data(2015, 7)
-    requests += extract_data(2015, 8)
-    requests += extract_data(2015, 9)
-    requests += extract_data(2015, 10)
-    requests += extract_data(2015, 11)
-    requests += extract_data(2015, 12)
-
-    requests += extract_data(2016, 1)
-    requests += extract_data(2016, 2)
-    requests += extract_data(2016, 3)
-    requests += extract_data(2016, 4)
-    end = datetime.now()
-    print "Extraction done in {} seconds".format((end-start).seconds)
+    end_time = datetime.now()
+    print "Extraction done in {} seconds".format((end_time-start_time).seconds)
     print "Sent {} requests".format(requests)
 
 if __name__ == "__main__":

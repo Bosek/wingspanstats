@@ -4,55 +4,59 @@
 
 import os
 import json
+import sys
+from db_create import get_daterange
 
 from rules.statsconfig import StatsConfig
-from rules.generalstats import GeneralStats
 from rules.agents import Agents
-from rules.victims import Victims
-from rules.ships import Ships
-from rules.valuables import Valuables
-from rules.solohunter import SoloHunter
-from rules.teamplayer import TeamPlayer
+from rules.astero import Astero
 from rules.awox import Awox
 from rules.blops import Blops
 from rules.bombers import Bombers
-from rules.astero import Astero
-from rules.stratios import Stratios
-from rules.recons import Recons
-from rules.t3cruiser import T3Cruiser
+from rules.bombingrun import BombingRun
 from rules.capitals import Capitals
 from rules.explorerhunter import ExplorerHunter
-from rules.minerbumper import MinerBumper
+from rules.generalstats import GeneralStats
 from rules.industrygiant import IndustryGiant
-from rules.bombingrun import BombingRun
 from rules.interdictorace import InterdictorAce
+from rules.minerbumper import MinerBumper
+from rules.nestor import Nestor
 from rules.podexpress import PodExpress
+from rules.recons import Recons
+from rules.ships import Ships
+from rules.solohunter import SoloHunter
+from rules.stratios import Stratios
+from rules.t3cruiser import T3Cruiser
+from rules.teamplayer import TeamPlayer
 from rules.theracrusader import TheraCrusader
+from rules.valuables import Valuables
+from rules.victims import Victims
 
 
 def defined_rules():
     return [
-        GeneralStats(),
         Agents(),
-        Ships(),
-        Victims(),
-        Valuables(),
-        SoloHunter(),
-        TeamPlayer(),
+        Astero(),
         Blops(),
         Bombers(),
-        Astero(),
-        Stratios(),
-        Recons(),
-        T3Cruiser(),
+        BombingRun(),
         Capitals(),
         ExplorerHunter(),
-        MinerBumper(),
+        GeneralStats(),
         IndustryGiant(),
-        BombingRun(),
         InterdictorAce(),
+        MinerBumper(),
+        Nestor(),
         PodExpress(),
+        Recons(),
+        Ships(),
+        SoloHunter(),
+        Stratios(),
+        T3Cruiser(),
+        TeamPlayer(),
         TheraCrusader(),
+        Valuables(),
+        Victims(),
     ]
 
 
@@ -109,30 +113,14 @@ def analyze_data(db_list):
 
 
 def main():
-    analyze_data([
-        (2014, 7),
-        (2014, 8),
-        (2014, 9),
-        (2014, 10),
-        (2014, 11),
-        (2014, 12),
-        (2015, 1),
-        (2015, 2),
-        (2015, 3),
-        (2015, 4),
-        (2015, 5),
-        (2015, 6),
-        (2015, 7),
-        (2015, 8),
-        (2015, 9),
-        (2015, 10),
-        (2015, 11),
-        (2015, 12),
-        (2016, 1),
-        (2016, 2),
-        (2016, 3),
-        (2016, 4),
-    ])
+    args = sys.argv
+
+    daterange = get_daterange(args[1] if len(args) >= 2 else None, args[2] if len(args) >= 3 else None)
+    if not daterange:
+        print "You have to specify the start date and optionally the end date in format YYYY-MM"
+        return
+
+    analyze_data(map(lambda x: (x['year'], x['month']), daterange))
 
 if __name__ == "__main__":
     main()

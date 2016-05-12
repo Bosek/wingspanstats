@@ -8,6 +8,7 @@ from statsconfig import StatsConfig
 import csv
 import numpy as np
 from calendar import monthrange
+from datetime import datetime
 
 
 class GeneralStats(Skeleton):
@@ -41,35 +42,7 @@ class GeneralStats(Skeleton):
     def preprocess_output(self):
         dictionary = super(self.__class__, self).preprocess_output()
         del dictionary["security"]
-        return dictionary
-
-    def compute_avg_members(self):
-        avg_members = 0
-
-        date_start = (
-            int(self.date_start.split('-')[0]),
-            int(self.date_start.split('-')[1])
-        )
-        date_end = (
-            int(self.date_end.split('-')[0]),
-            int(self.date_end.split('-')[1])
-        )
-
-        if date_start == date_end:
-            # same month
-            (_, end_day) = monthrange(date_start[0], date_start[1])
-            for corp_name in self.corp_names:
-                avg_members += StatsConfig.member_count(
-                    corp_name.replace(" ", "_"),
-                    "{}-{:02d}-01".format(date_start[0], date_start[1]),
-                    "{}-{:02d}-{}".format(date_start[0], date_start[1], end_day),
-                )
-
-        return avg_members
-
-    def preprocess_output(self):
-        dictionary = super(self.__class__, self).preprocess_output()
-        del dictionary["security"]
+        del dictionary["pilots"]
         return dictionary
 
     def process_km(self, killmail):
@@ -87,9 +60,16 @@ class GeneralStats(Skeleton):
                 if not self.date_start:
                     self.date_start = date
                     self.date_end = date
-                if int(self.date_start.split('-')[2]) > int(date.split('-')[2]):
+                newdate = map(lambda x: int(x), date.split('-'))
+                newdate = datetime(newdate[0], newdate[1], newdate[2])
+                olddate_start = map(lambda x: int(x), self.date_start.split('-'))
+                olddate_start = datetime(olddate_start[0], olddate_start[1], olddate_start[2])
+                olddate_end = map(lambda x: int(x), self.date_end.split('-'))
+                olddate_end = datetime(olddate_end[0], olddate_end[1], olddate_end[2])
+
+                if newdate < olddate_start:
                     self.date_start = date
-                if int(self.date_end.split('-')[2]) < int(date.split('-')[2]):
+                if newdate > olddate_end:
                     self.date_end = date
 
         [total_non_npc_attackers,
