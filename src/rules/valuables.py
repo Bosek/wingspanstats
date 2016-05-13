@@ -24,8 +24,9 @@ class Valuables(Skeleton):
         solar_system_id = killmail['solarSystemID']
         date = killmail['killTime']
         isk_destroyed = killmail['zkb']['totalValue']
+        citadels = [35832, 35833, 35834, 40340]
 
-        if character_name != "":
+        if (character_name != "" or ship_type_id in citadels):
             self.kills.append(
                 Kill(
                     kill_id,
