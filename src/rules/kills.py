@@ -1,4 +1,4 @@
-# valuables.py
+# kills.py
 # Author: Valtyr Farshield
 # Author: Tomas Bosek
 
@@ -7,10 +7,10 @@ from statsconfig import StatsConfig
 from models.kill import Kill
 
 
-class Valuables(Skeleton):
+class Kills(Skeleton):
 
     def __init__(self):
-        self.json_file_name = "valuables.json"
+        self.json_file_name = "kills.json"
         self.kills = list()
 
     def sort(self):

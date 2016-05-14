@@ -5,6 +5,7 @@
 import os
 import json
 import sys
+import download
 from db_create import get_daterange
 
 from rules.statsconfig import StatsConfig
@@ -19,6 +20,7 @@ from rules.explorerhunter import ExplorerHunter
 from rules.generalstats import GeneralStats
 from rules.industrygiant import IndustryGiant
 from rules.interdictorace import InterdictorAce
+from rules.kills import Kills
 from rules.minerbumper import MinerBumper
 from rules.nestor import Nestor
 from rules.podexpress import PodExpress
@@ -29,7 +31,6 @@ from rules.stratios import Stratios
 from rules.t3cruiser import T3Cruiser
 from rules.teamplayer import TeamPlayer
 from rules.theracrusader import TheraCrusader
-from rules.valuables import Valuables
 from rules.victims import Victims
 
 
@@ -45,6 +46,7 @@ def defined_rules():
         GeneralStats(),
         IndustryGiant(),
         InterdictorAce(),
+        Kills(),
         MinerBumper(),
         Nestor(),
         PodExpress(),
@@ -55,7 +57,6 @@ def defined_rules():
         T3Cruiser(),
         TeamPlayer(),
         TheraCrusader(),
-        Valuables(),
         Victims(),
     ]
 
@@ -112,12 +113,35 @@ def analyze_data(db_list):
     awox_alltime.output_results(os.path.join(StatsConfig.RESULTS_PATH, '__alltime__'))
 
 
+def check_csv_files():
+    typeids_file = "typeIDs.csv"
+    typeids_url = "https://www.fuzzwork.co.uk/resources/typeids.csv"
+    typeids_ok = os.path.isfile(typeids_file)
+
+    def progress(progress, filesize):
+        sys.stdout.write("{}%\r".format(int((progress/float(filesize))*100)))
+        sys.stdout.flush()
+
+    def end(): print "Downloaded"
+
+    if not typeids_ok:
+        print "Downloading {}".format(typeids_file)
+        typeids_ok = download.saveContent(typeids_url, typeids_file,
+                                          progressCallback=progress, endCallback=end)
+
+    return typeids_ok
+
+
 def main():
     args = sys.argv
 
     daterange = get_daterange(args[1] if len(args) >= 2 else None, args[2] if len(args) >= 3 else None)
     if not daterange:
         print "You have to specify the start date and optionally the end date in format YYYY-MM"
+        return
+
+    if not check_csv_files():
+        print "Cannot obtain CSV file(s)."
         return
 
     analyze_data(map(lambda x: (x['year'], x['month']), daterange))
